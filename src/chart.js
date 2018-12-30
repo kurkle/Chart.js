@@ -23,6 +23,7 @@ Chart.plugins = require('./core/core.plugins');
 Chart.Scale = require('./core/core.scale');
 Chart.scaleService = require('./core/core.scaleService');
 Chart.Ticks = require('./core/core.ticks');
+Chart.tickLabel = require('./core/core.tickLabel');
 Chart.Tooltip = require('./core/core.tooltip');
 
 // Register built-in scales

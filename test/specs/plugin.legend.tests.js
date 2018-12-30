@@ -477,7 +477,7 @@ describe('Legend block tests', function() {
 		var chart = window.acquireChart({
 			type: 'bar',
 			data: {
-				datasets: Array.apply(null, Array(22)).map(function() {
+				datasets: Array.apply(null, Array(23)).map(function() {
 					return {
 						label: ' ',
 						data: []
@@ -495,8 +495,8 @@ describe('Legend block tests', function() {
 		expect(chart.legend.left).toBeCloseToPixel(0);
 		expect(chart.legend.top).toBeCloseToPixel(6);
 		expect(chart.legend.width).toBeCloseToPixel(128);
-		expect(chart.legend.height).toBeCloseToPixel(476);
-		expect(chart.legend.legendHitBoxes.length).toBe(22);
+		expect(chart.legend.height).toBeCloseToPixel(489);
+		expect(chart.legend.legendHitBoxes.length).toBe(23);
 
 		[
 			{h: 12, l: 10, t: 16, w: 49},
@@ -520,6 +520,7 @@ describe('Legend block tests', function() {
 			{h: 12, l: 10, t: 412, w: 49},
 			{h: 12, l: 10, t: 434, w: 49},
 			{h: 12, l: 10, t: 456, w: 49},
+			{h: 12, l: 10, t: 479, w: 49},
 			{h: 12, l: 69, t: 16, w: 49}
 		].forEach(function(expected, i) {
 			expect(chart.legend.legendHitBoxes[i].height).toBeCloseToPixel(expected.h);
