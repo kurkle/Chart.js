@@ -33,9 +33,14 @@
     "files": [
         {
             "path": "dist/*.min.js",
-            "maxSize": "3kB"
+            "maxSize": "200kB",
+            "compression": "none"
         }
-    ]
+    ],
+    "ci": {
+      "repoOwner": "kurkle",
+      "repoName": "Chart.js"
+    }
   },
   "devDependencies": {
     "@babel/core": "^7.6.2",
