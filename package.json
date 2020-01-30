@@ -29,10 +29,19 @@
     "dist/*.css",
     "dist/*.js"
   ],
+  "bundlewatch" : {
+    "files": [
+        {
+            "path": "dist/*.min.js",
+            "maxSize": "3kB"
+        }
+    ]
+  },
   "devDependencies": {
     "@babel/core": "^7.6.2",
     "@babel/preset-env": "^7.6.2",
     "babel-preset-es2015-rollup": "^3.0.0",
+    "bundlewatch": "^0.2.5",
     "clean-css": "^4.2.1",
     "coveralls": "^3.0.0",
     "eslint": "^6.0.0",
