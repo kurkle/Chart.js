@@ -5,6 +5,7 @@ import {callback as call, each, isArray, isFinite, isNullOrUndef, isObject, valu
 import {_factorize, toDegrees, toRadians, _int32Range} from '../helpers/helpers.math';
 import {toFont, resolve, toPadding} from '../helpers/helpers.options';
 import Ticks from './core.ticks';
+import Label from '../elements/element.label';
 
 /**
  * @typedef { import("./core.controller").default } Chart
@@ -1509,7 +1510,18 @@ export default class Scale extends Element {
 			}
 			rotation = isLeft ? -0.5 * Math.PI : 0.5 * Math.PI;
 		}
-
+		const label = new Label({
+			x: scaleLabelX,
+			y: scaleLabelY,
+			options: {
+				align: textAlign,
+				font: scaleLabelFont,
+			},
+			rotation,
+			text: scaleLabelY.labelString
+		});
+		label.draw(ctx);
+		/*
 		ctx.save();
 		ctx.translate(scaleLabelX, scaleLabelY);
 		ctx.rotate(rotation);
@@ -1519,6 +1531,7 @@ export default class Scale extends Element {
 		ctx.font = scaleLabelFont.string;
 		ctx.fillText(scaleLabel.labelString, 0, 0);
 		ctx.restore();
+		*/
 	}
 
 	draw(chartArea) {
