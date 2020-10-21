@@ -1166,4 +1166,7 @@ export default {
 			afterFooter: noop
 		}
 	},
+	afterRegister() {
+		defaults.route('plugins', 'tooltip', '', 'interaction');
+	},
 };

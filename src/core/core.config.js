@@ -1,13 +1,13 @@
 /* eslint-disable import/no-namespace, import/namespace */
 import defaults from './core.defaults';
-import {mergeIf, merge, _merger} from '../helpers/helpers.core';
+import {isObject} from '../helpers/helpers.core';
 
-export function getIndexAxis(type, options) {
+export function getIndexAxis(type, optionsWithDefaults) {
 	const typeDefaults = defaults[type] || {};
 	const datasetDefaults = typeDefaults.datasets || {};
-	const typeOptions = options[type] || {};
+	const typeOptions = optionsWithDefaults[type] || {};
 	const datasetOptions = typeOptions.datasets || {};
-	return datasetOptions.indexAxis || options.indexAxis || datasetDefaults.indexAxis || 'x';
+	return datasetOptions.indexAxis || optionsWithDefaults.indexAxis || datasetDefaults.indexAxis || 'x';
 }
 
 function getAxisFromDefaultScaleID(id, indexAxis) {
@@ -40,72 +40,136 @@ export function determineAxis(id, scaleOptions) {
 	return scaleOptions.axis || axisFromPosition(scaleOptions.position) || id.charAt(0).toLowerCase();
 }
 
-function mergeScaleConfig(config, options) {
-	options = options || {};
-	const chartDefaults = defaults[config.type] || {scales: {}};
-	const configScales = options.scales || {};
-	const chartIndexAxis = getIndexAxis(config.type, options);
+const directPropertyOrDefault = (obj, prop, def) => Object.prototype.hasOwnProperty.call(obj, prop) ? obj[prop] : def;
+
+/**
+ * @param { Config } config
+ */
+function includeScaleDefaults(config) {
+	const optionsWithDefaults = config.options;
+	const configScales = directPropertyOrDefault(optionsWithDefaults, 'scales', {});
+	const chartIndexAxis = getIndexAxis(config.type, optionsWithDefaults);
 	const firstIDs = Object.create(null);
 	const scales = Object.create(null);
 
-	// First figure out first scale id's per axis.
+	// Figure out first scale id's per axis.
 	Object.keys(configScales).forEach(id => {
+		if (id === '_index_' || id === '_value_') {
+			return;
+		}
 		const scaleConf = configScales[id];
 		const axis = determineAxis(id, scaleConf);
 		const defaultId = getDefaultScaleIDFromAxis(axis, chartIndexAxis);
+		let parent = scaleConf;
+		if (isObject(configScales[defaultId])) {
+			parent = configScales[defaultId];
+			Object.setPrototypeOf(scaleConf, parent);
+		}
+		scaleConf._parent = parent;
 		firstIDs[axis] = firstIDs[axis] || id;
-		scales[id] = mergeIf(Object.create(null), [{axis}, scaleConf, chartDefaults.scales[axis], chartDefaults.scales[defaultId]]);
+		scales[id] = scaleConf;
 	});
-
-	// Backward compatibility
-	if (options.scale) {
-		scales[options.scale.id || 'r'] = mergeIf(Object.create(null), [{axis: 'r'}, options.scale, chartDefaults.scales.r]);
-		firstIDs.r = firstIDs.r || options.scale.id || 'r';
-	}
 
 	// Then merge dataset defaults to scale configs
 	config.data.datasets.forEach(dataset => {
 		const type = dataset.type || config.type;
-		const indexAxis = dataset.indexAxis || getIndexAxis(type, options);
+		const indexAxis = dataset.indexAxis || getIndexAxis(type, optionsWithDefaults);
 		const datasetDefaults = defaults[type] || {};
-		const defaultScaleOptions = datasetDefaults.scales || {};
+		const defaultScaleOptions = directPropertyOrDefault(datasetDefaults, 'scales', {});
 		Object.keys(defaultScaleOptions).forEach(defaultID => {
 			const axis = getAxisFromDefaultScaleID(defaultID, indexAxis);
 			const id = dataset[axis + 'AxisID'] || firstIDs[axis] || axis;
-			scales[id] = scales[id] || Object.create(null);
-			mergeIf(scales[id], [{axis}, configScales[id], defaultScaleOptions[defaultID]]);
+			const scale = scales[id] = Object.assign(scales[id] || Object.create(null), {axis}, configScales[id]);
+			const defaultScaleOpts = defaultScaleOptions[defaultID];
+			if (isObject(defaultScaleOpts) && defaultScaleOpts !== scale._parent) {
+				recursiveSetPrototype(scale._parent || scale, defaultScaleOpts);
+				scale._parent = defaultScaleOpts;
+			}
 		});
 	});
 
 	// apply scale defaults, if not overridden by dataset defaults
 	Object.keys(scales).forEach(key => {
 		const scale = scales[key];
-		mergeIf(scale, [defaults.scales[scale.type], defaults.scale]);
+		const target = scale._parent || scale;
+		delete scale._parent;
+		if (scale.type && defaults.scales[scale.type]) {
+			recursiveSetPrototype(defaults.scales[scale.type], defaults.scale);
+			recursiveSetPrototype(target, defaults.scales[scale.type]);
+		}
+		recursiveSetChildPrototypes(scale);
 	});
+
 
 	return scales;
 }
 
-/**
- * Recursively merge the given config objects as the root options by handling
- * default scale options for the `scales` and `scale` properties, then returns
- * a deep copy of the result, thus doesn't alter inputs.
- */
-function mergeConfig(...args/* config objects ... */) {
-	return merge(Object.create(null), args, {
-		merger(key, target, source, options) {
-			if (key !== 'scales' && key !== 'scale') {
-				_merger(key, target, source, options);
+function recursiveChildObjects(target) {
+	const props = new Map();
+	let obj = Object.getPrototypeOf(target);
+	while (obj) {
+		const keys = Object.keys(obj);
+		for (let i = 0; i < keys.length; i++) {
+			const key = keys[i];
+			if (isObject(obj[key])) {
+				if (props.has(key)) {
+					props.get(key).push(obj[key]);
+				} else {
+					props.set(key, [obj[key]]);
+				}
 			}
+		}
+		obj = Object.getPrototypeOf(obj);
+	}
+	return props;
+}
+
+function recursiveSetChildPrototypes(target) {
+	const map = recursiveChildObjects(target);
+	map.forEach((chain, key) => {
+		let child = directPropertyOrDefault(target, key, Object.create(null));
+		if (target[key] !== child) {
+			target[key] = child;
+		}
+		chain.forEach(parent => {
+			Object.setPrototypeOf(child, parent);
+			child = parent;
+		});
+		recursiveSetChildPrototypes(target[key]);
+	});
+}
+
+function recursiveSetPrototype(child, parent) {
+	if (!child || !parent || child === parent) {
+		return;
+	}
+	Object.setPrototypeOf(child, parent);
+	Object.keys(child).forEach(key => {
+		if (key.charAt(0) === '_') {
+			return;
+		}
+		if (isObject(child[key]) && isObject(parent[key])) {
+			recursiveSetPrototype(child[key], parent[key]);
 		}
 	});
 }
 
 function includeDefaults(options, type) {
-	return mergeConfig(
-		defaults,
-		defaults[type],
-		options || {});
+	let parent = defaults;
+	const typeDefaults = defaults[type];
+	if (typeDefaults) {
+		if (isObject(typeDefaults.datasets)) {
+			// if there is a default datasets config, include it in the prototype chain
+			Object.setPrototypeOf(typeDefaults.datasets, defaults);
+			parent = typeDefaults.datasets;
+		}
+		recursiveSetPrototype(typeDefaults, parent);
+		parent = typeDefaults;
+	}
+	const newOpts = Object.assign(Object.create(null), options);
+	recursiveSetPrototype(newOpts, parent);
+
+	return newOpts;
 }
 
 function initConfig(config) {
@@ -117,29 +181,8 @@ function initConfig(config) {
 	data.datasets = data.datasets || [];
 	data.labels = data.labels || [];
 
-	const scaleConfig = mergeScaleConfig(config, config.options);
-
-	const options = config.options = includeDefaults(config.options, config.type);
-
-	options.hover = merge(Object.create(null), [
-		defaults.interaction,
-		defaults.hover,
-		options.interaction,
-		options.hover
-	]);
-
-	options.scales = scaleConfig;
-
-	options.title = (options.title !== false) && merge(Object.create(null), [
-		defaults.plugins.title,
-		options.title
-	]);
-	options.tooltips = (options.tooltips !== false) && merge(Object.create(null), [
-		defaults.interaction,
-		defaults.plugins.tooltip,
-		options.interaction,
-		options.tooltips
-	]);
+	config.options = includeDefaults(config.options, config.type);
+	includeScaleDefaults(config);
 
 	return config;
 }
@@ -171,7 +214,7 @@ export default class Config {
 
 	update(options) {
 		const config = this._config;
-		const scaleConfig = mergeScaleConfig(config, options);
+		const scaleConfig = includeScaleDefaults(config);
 
 		options = includeDefaults(options, config.type);
 
