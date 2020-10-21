@@ -18,11 +18,21 @@ jobs:
       run: |
         npm ci
         npm run build
-    - name: Bundlewatch
+    - name: Bundlewatch (PR)
+      if: github.event_name == 'pull_request'
       run: npx bundlewatch
       env:
         CI_REPO_OWNER: ${{ github.repository_owner }}
         CI_REPO_NAME: ${{ github.event.repository.name }}
         CI_COMMIT_SHA: ${{ github.sha }}
-        CI_BRANCH: master
+        CI_BRANCH: ${{ github.head_href }}
+        BUNDLEWATCH_GITHUB_TOKEN: ${{ secrets.BUNDLEWATCH_GITHUB_TOKEN }}
+    - name: Bundlewatch (PUSH)
+      if: github.event_name != 'pull_request'
+      run: npx bundlewatch
+      env:
+        CI_REPO_OWNER: ${{ github.repository_owner }}
+        CI_REPO_NAME: ${{ github.event.repository.name }}
+        CI_COMMIT_SHA: ${{ github.sha }}
+        CI_BRANCH: ${{ github.ref#refs/heads/ }}
         BUNDLEWATCH_GITHUB_TOKEN: ${{ secrets.BUNDLEWATCH_GITHUB_TOKEN }}
