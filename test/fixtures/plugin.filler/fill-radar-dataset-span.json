@@ -30,8 +30,10 @@
             "spanGaps": true,
             "legend": false,
             "title": false,
-            "scale": {
-                "display": false
+            "scales": {
+				"r": {
+					"display": false
+				}
             },
             "elements": {
                 "point": {

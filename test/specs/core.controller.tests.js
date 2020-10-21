@@ -264,11 +264,13 @@ describe('Chart', function() {
 			var chart = acquireChart({
 				type: 'line',
 				options: {
-					scale: {
-						id: 'foo',
-						type: 'logarithmic',
-						_jasmineCheckC: 'c2',
-						_jasmineCheckD: 'd2'
+					scales: {
+						foo: {
+							axis: 'r',
+							type: 'logarithmic',
+							_jasmineCheckC: 'c2',
+							_jasmineCheckD: 'd2'
+						}
 					}
 				}
 			});

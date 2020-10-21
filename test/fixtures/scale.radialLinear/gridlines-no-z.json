@@ -12,21 +12,23 @@
             "responsive": false,
             "legend": false,
             "title": false,
-            "scale": {
-                "gridLines": {
-                    "color": "rgba(0, 0, 0, 1)",
-                    "lineWidth": 1
-                },
-                "angleLines": {
-                    "color": "rgba(0, 0, 255, 1)",
-                    "lineWidth": 1
-                },
-                "pointLabels": {
-                    "display": false
-                },
-                "ticks": {
-                    "display": false
-                }
+            "scales": {
+				"r": {
+					"gridLines": {
+						"color": "rgba(0, 0, 0, 1)",
+						"lineWidth": 1
+					},
+					"angleLines": {
+						"color": "rgba(0, 0, 255, 1)",
+						"lineWidth": 1
+					},
+					"pointLabels": {
+						"display": false
+					},
+					"ticks": {
+						"display": false
+					}
+				}
             }
         }
     }

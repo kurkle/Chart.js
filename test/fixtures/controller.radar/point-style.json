@@ -66,10 +66,12 @@
             "responsive": false,
             "legend": false,
             "title": false,
-            "scale": {
-                "display": false,
-                "min": 0,
-                "max": 3
+            "scales": {
+				"r": {
+					"display": false,
+					"min": 0,
+					"max": 3
+				}
             },
             "elements": {
                 "line": {

@@ -29,8 +29,10 @@ module.exports = {
 					borderWidth: 5,
 				}
 			},
-			scale: {
-				display: false
+			scales: {
+				r: {
+					display: false
+				}
 			}
 		}
 	},

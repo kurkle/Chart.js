@@ -24,8 +24,10 @@ module.exports = {
 					}
 				}
 			},
-			scale: {
-				display: false
+			scales: {
+				r: {
+					display: false
+				}
 			}
 		}
 	},

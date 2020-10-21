@@ -13,12 +13,14 @@
             "spanGaps": false,
             "legend": false,
             "title": false,
-            "scale": {
-                "display": false,
-                "gridLines": {
-                    "circular": true
-                }
-            },
+            "scales": {
+				"r": {
+					"display": false,
+					"gridLines": {
+						"circular": true
+					}
+				}
+			},
             "elements": {
                 "point": {
                     "radius": 0

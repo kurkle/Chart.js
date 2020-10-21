@@ -20,14 +20,16 @@
             "responsive": false,
             "legend": false,
             "title": false,
-            "scale": {
-				"display": true,
-				"angleLines": {
+            "scales": {
+				"r": {
 					"display": true,
-					"color": "#000"
-				},
-				"ticks": {
-					"display": false
+					"angleLines": {
+						"display": true,
+						"color": "#000"
+					},
+					"ticks": {
+						"display": false
+					}
 				}
             }
         }
