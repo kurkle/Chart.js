@@ -1,4 +1,4 @@
-import {merge, valueOrDefault} from '../helpers/helpers.core';
+import {isObject, merge, valueOrDefault} from '../helpers/helpers.core';
 
 /**
  * @param {object} node
@@ -94,6 +94,12 @@ export class Defaults {
 		const targetScopeObject = getScope(this, targetScope);
 		const privateName = '_' + name;
 
+		if (isObject(scopeObject[name]) && isObject(targetScopeObject[name])) {
+			// for objects, prototype chain is used
+			Object.setPrototypeOf(scopeObject[name], targetScopeObject[targetName]);
+			return;
+		}
+
 		Object.defineProperties(scopeObject, {
 			// A private property is defined to hold the actual value, when this property is set in its scope (set in the setter)
 			[privateName]: {
@@ -115,4 +121,9 @@ export class Defaults {
 }
 
 // singleton instance
-export default new Defaults();
+const instance = new Defaults();
+
+// hover inherits from interaction
+instance.route('', 'hover', '', 'interaction');
+
+export default instance;
