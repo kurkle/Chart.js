@@ -34,5 +34,5 @@ jobs:
         CI_REPO_OWNER: ${{ github.repository_owner }}
         CI_REPO_NAME: ${{ github.event.repository.name }}
         CI_COMMIT_SHA: ${{ github.sha }}
-        CI_BRANCH: ${{ github.ref#refs/heads/ }}
+        CI_BRANCH: ${GITHUB_REF#refs/heads/}
         BUNDLEWATCH_GITHUB_TOKEN: ${{ secrets.BUNDLEWATCH_GITHUB_TOKEN }}
