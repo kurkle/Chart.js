@@ -18,6 +18,11 @@ jobs:
       run: |
         npm ci
         npm run build
-    - uses: jackyef/bundlewatch-gh-action@master
-      with:
-        bundlewatch-github-token: ${{ secrets.BUNDLEWATCH_GITHUB_TOKEN }}
+    - name: Bundlewatch
+      run: npx bundlewatch
+      env:
+        CI_REPO_OWNER: ${{ github.repository_owner }}
+        CI_REPO_NAME: ${{ github.event.repository.name }}
+        CI_COMMIT_SHA: ${{ github.sha }}
+        CI_BRANCH: master
+        BUNDLEWATCH_GITHUB_TOKEN: ${{ secrets.BUNDLEWATCH_GITHUB_TOKEN }}
