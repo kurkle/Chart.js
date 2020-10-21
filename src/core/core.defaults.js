@@ -94,7 +94,7 @@ export class Defaults {
 		const targetScopeObject = getScope(this, targetScope);
 		const privateName = '_' + name;
 
-		if (isObject(scopeObject[name]) && isObject(targetScopeObject[name])) {
+		if (isObject(scopeObject[name]) && isObject(targetScopeObject[targetName])) {
 			// for objects, prototype chain is used
 			Object.setPrototypeOf(scopeObject[name], targetScopeObject[targetName]);
 			return;
