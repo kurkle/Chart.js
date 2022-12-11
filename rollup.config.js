@@ -45,13 +45,24 @@ const plugins = (minify) =>
 
 export default [
   // UMD build
-  // dist/chart.umd.js
+  // dist/chart.cjs
   {
     input: 'src/index.umd.ts',
     plugins: plugins(true),
     output: {
       name: 'Chart',
-      file: 'dist/chart.umd.js',
+      file: 'dist/chart.cjs',
+      format: 'umd',
+      indent: false,
+      sourcemap: true,
+    },
+  },
+  {
+    input: 'src/helpers/index.ts',
+    plugins: plugins(true),
+    output: {
+      name: 'chart.js-helpers',
+      file: 'dist/helpers.cjs',
       format: 'umd',
       indent: false,
       sourcemap: true,

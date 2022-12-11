@@ -7,23 +7,26 @@
     "type": "module",
     "sideEffects": [
         "./auto/auto.js",
-        "./dist/chart.umd.js"
+        "./dist/chart.cjs"
     ],
-    "jsdelivr": "./dist/chart.umd.js",
-    "unpkg": "./dist/chart.umd.js",
+    "jsdelivr": "./dist/chart.cjs",
+    "unpkg": "./dist/chart.cjs",
     "main": "./dist/chart.js",
     "exports": {
         ".": {
             "types": "./dist/types.d.ts",
-            "import": "./dist/chart.js"
+            "import": "./dist/chart.js",
+            "require": "./dist/chart.cjs"
         },
         "./auto": {
             "types": "./auto/auto.d.ts",
-            "import": "./auto/auto.js"
+            "import": "./auto/auto.js",
+            "require": "./dist/chart.cjs"
         },
         "./helpers": {
             "types": "./helpers/helpers.d.ts",
-            "import": "./helpers/helpers.js"
+            "import": "./helpers/helpers.js",
+            "require": "./dist/helpers.cjs"
         }
     },
     "types": "./dist/types.d.ts",
