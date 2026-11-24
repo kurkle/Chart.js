@@ -13,6 +13,7 @@ const vueDir = path.dirname(createRequire(import.meta.url).resolve('vue/package.
 // build; the committed default is master, so a local build or the dev server
 // needs no extra step.
 const base = `/docs/${version}/` as const;
+const probe: number = base;
 
 export default defineConfig({
   title: 'Chart.js',
