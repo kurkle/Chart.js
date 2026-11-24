@@ -138,7 +138,7 @@ export function versionMenu({version, number, versions}: {
 
   // A prerelease is published under /docs/next/, never under its own number.
   const releases = versions.filter(({parts: [major, minor], prerelease}) =>
-    !prerelease.length && (major > 2 || (major === 2 && minor >= 6)));
+    !prerelease.length && (major > 2 || (major === 2 && minor >= 5)));
 
   return {
     title: menuTitle(version, number, versions),
